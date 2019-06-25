@@ -127,7 +127,8 @@
 
 (defmethod print-object ((method method) stream)
   (print-unreadable-object (method stream :type t)
-    (format stream "~S ~A" (method-name method) (method-signature method)))
+    (format stream "~S ~A->~A" (method-name method) (method-signature method)
+            (method-result-types method)))
   method)
 
 (defun make-method (name signature parm-names parm-types results)

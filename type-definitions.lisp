@@ -130,5 +130,5 @@
   :signature #\h
   :alignment 4
   :pack (u32 value)
-  :unpack (u32)
+  :unpack (elt dbus/connections::*fds* (u32))
   :checker (unsigned-byte 32))
