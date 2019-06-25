@@ -161,30 +161,6 @@
 (defclass socket-connection-mixin ()
   ((socket :initarg :socket :reader connection-socket)))
 
-(defvar *fds*)
-(defun read-with-fds (fd buffer nbytes)
-  (if (boundp '*fds*)
-      (iolib/sockets::with-buffers-for-fd-passing (msg cmsg)
-        (declare (ignorable msg))
-        (let ((data (isys:cmsg.data cmsg)))
-          (cffi:with-foreign-slots ((iolib/sockets::control
-                                     iolib/sockets::controllen
-                                     iolib/sockets::iov
-                                     iolib/sockets::iovlen)
-                                    msg iolib/sockets::msghdr)
-            (cffi:with-foreign-object (iov :pointer 4)
-              (isys:bzero iov (* 4 (cffi:foreign-type-size :pointer)))
-              (setf (cffi:mem-aref iov :pointer) buffer)
-              (setf (cffi:mem-ref iov :int (cffi:foreign-type-size :pointer))
-                    nbytes)
-              (setf iolib/sockets::iov iov)
-              (setf iolib/sockets::iovlen 1)
-              (prog1
-                  (iolib/sockets::%recvmsg fd msg 0)
-                (push (cffi:mem-ref data :int) *fds*))))))
-      (iolib/sockets::%recvfrom fd buffer nbytes 0
-                                (cffi:null-pointer) (cffi:null-pointer))))
-
 (defun open-socket-connection (address-family socket-address)
   (let ((socket (make-socket :address-family address-family
                              :external-format '(:utf-8 :eol-style :crlf))))
