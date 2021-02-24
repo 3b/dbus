@@ -30,7 +30,9 @@
    #:u8
    #:u16
    #:u32
-   #:u64))
+   #:u64
+   #:*fds*
+   #:read-with-fds))
 
 (in-package #:dbus/utils)
 
